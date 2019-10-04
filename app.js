@@ -8,12 +8,13 @@ var multerS3 = require('multer-s3')
 var bodyParser = require('body-parser');
  
 var app = express()
-var rekognition = new AWS.Rekognition({apiVersion: process.env.API_VERSION});
+var rekognition = new AWS.Rekognition({apiVersion: process.env.API_VERSION, region: 'us-east-2'});
 const dotenv = require('dotenv');
 dotenv.config();
 
 var s3 = new AWS.S3();
 var listenPort = process.env.PORT;
+AWS.config.update({region:'us-east-2'});
 app.use(express.static('public'));
 app.use(bodyParser.json({limit: '100mb'}));
 app.use(bodyParser.urlencoded({ extended: true , limit: '100mb', parameterLimit: 500000}));
