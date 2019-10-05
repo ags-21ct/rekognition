@@ -8,13 +8,14 @@ var multerS3 = require('multer-s3')
 var bodyParser = require('body-parser');
  
 var app = express()
+AWS.config.loadFromPath('./config.json');
 var rekognition = new AWS.Rekognition({apiVersion: process.env.API_VERSION, region: 'us-east-2'});
 const dotenv = require('dotenv');
 dotenv.config();
 
 var s3 = new AWS.S3();
 var listenPort = process.env.PORT;
-AWS.config.update({region:'us-east-2'});
+// AWS.config.update({region:'us-east-2'});
 app.use(express.static('public'));
 app.use(bodyParser.json({limit: '100mb'}));
 app.use(bodyParser.urlencoded({ extended: true , limit: '100mb', parameterLimit: 500000}));
@@ -43,7 +44,7 @@ var cpUpload = upload.fields([{ name: 'imgSelfie', maxCount: 1 }, { name: 'imgID
 app.post('/faceCompare', cpUpload, function(req, res, next) {
 	console.log(req.files['imgSelfie']);
 	 var params = {
-	  SimilarityThreshold: 80, 
+	  SimilarityThreshold: 20, 
 	  SourceImage: {
 	   S3Object: {
 	    Bucket: process.env.AWS_BUCKET, 
@@ -57,6 +58,7 @@ app.post('/faceCompare', cpUpload, function(req, res, next) {
 	   }
 	  }
 	 };
+	 let x = 0;
 	 rekognition.compareFaces(params, function(err, data) {
 	   if (err){
 	   	console.log(err, err.stack); // an error occurred
@@ -69,6 +71,29 @@ app.post('/faceCompare', cpUpload, function(req, res, next) {
 		res.json(result);
 	   }
 	});
+
+
+});
+var cpUpload2 = upload.fields([{ name: 'imgSelfie', maxCount: 1 }])
+app.post('/recognizeCelebrity', cpUpload2, function(req, res, next) {
+	var params = {
+		Image: {
+		  S3Object: {
+			Bucket: process.env.AWS_BUCKET, 
+			Name: req.files['imgSelfie'][0].key
+		  }
+		}
+	  };
+	  rekognition.recognizeCelebrities(params, function(err, data) {
+		if (err) console.log(err, err.stack); // an error occurred
+		else  {
+			let result = {
+				statusCode:200,
+				data: data
+			}
+		 res.json(result);
+		}          // successful response
+	  });
 
 
 });
