@@ -97,6 +97,28 @@ app.post('/recognizeCelebrity', cpUpload2, function(req, res, next) {
 
 
 });
+app.post('/analysis', cpUpload2, function(req, res, next) {
+	var params = {
+		Image: {
+		 S3Object: {
+			Bucket: process.env.AWS_BUCKET, 
+			Name: req.files['imgSelfie'][0].key
+		 }
+		}, 
+		MaxLabels: 123, 
+		MinConfidence: 70
+	   };
+	   rekognition.detectLabels(params, function(err, data) {
+		 if (err) console.log(err, err.stack); // an error occurred
+		 else {
+			let result = {
+				statusCode:200,
+				data: data
+			}
+		 res.json(result);
+		 }
+		});
+});
 
 app.listen(listenPort, function () {
     console.log('Admin webserver listening on port ' + listenPort);
