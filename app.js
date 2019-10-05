@@ -75,6 +75,10 @@ app.post('/faceCompare', cpUpload, function(req, res, next) {
 
 });
 var cpUpload2 = upload.fields([{ name: 'imgSelfie', maxCount: 1 }])
+//วิเคราะห์คนดัง
+/*params
+{ต้องการ file ชื่อ imgSelfie 1 ตัว}
+*/
 app.post('/recognizeCelebrity', cpUpload2, function(req, res, next) {
 	var params = {
 		Image: {
@@ -97,6 +101,10 @@ app.post('/recognizeCelebrity', cpUpload2, function(req, res, next) {
 
 
 });
+//วิเคราะห์องประกอบในภาพ
+/*params
+{ต้องการ file ชื่อ imgSelfie 1 ตัว}
+*/
 app.post('/analysis', cpUpload2, function(req, res, next) {
 	var params = {
 		Image: {
